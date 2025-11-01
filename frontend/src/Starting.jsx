@@ -49,7 +49,21 @@ const ContentWrapper = styled.div`
   justify-content: center;
   z-index: 1;
   width: 100%;
-  margin-top: 5rem;
+  padding: 0 1rem;
+  margin-top: 6rem;
+
+  @media (min-width: 481px) {
+    margin-top: 8rem;
+    padding: 0 1.5rem;
+  }
+
+  @media (min-width: 769px) {
+    margin-top: 10rem;
+  }
+
+  @media (min-width: 1025px) {
+    margin-top: 14.25rem;
+  }
 `;
 
 const GradientCircle1 = styled.div`
@@ -60,7 +74,7 @@ const GradientCircle1 = styled.div`
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0) 0%,
-    rgba(98, 0, 255, 0.31) 50%,
+    rgba(135, 60, 255, 0.3) 50%,
     #0e0025 100%
   );
   top: -200px;
@@ -85,7 +99,7 @@ const GradientCircle2 = styled.div`
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0) 0%,
-    rgba(98, 0, 255, 0.31) 50%,
+    rgba(135, 60, 255, 0.3) 50%,
     #0e0025 100%
   );
   bottom: -150px;
@@ -104,10 +118,24 @@ const GradientCircle2 = styled.div`
 
 const SubTitle = styled.h1`
   color: rgba(255, 255, 255, 0.8);
-  font-size: 1.25rem;
+  font-size: 0.9rem;
   font-weight: 400;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   letter-spacing: 0.5px;
+  text-align: center;
+
+  @media (min-width: 481px) {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (min-width: 769px) {
+    font-size: 1.15rem;
+  }
+
+  @media (min-width: 1025px) {
+    font-size: 1.25rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -115,11 +143,13 @@ const Title = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-size: 6.5rem;
+  font-size: 4rem;
   font-weight: 900;
   font-family: "Cinzel Decorative", cursive;
-  text-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
+  text-shadow: 0 0 40px rgba(150, 100, 200, 0.3);
   position: relative;
+  text-align: center;
+  line-height: 1.2;
 
   &::after {
     content: "SAJUBOYS";
@@ -129,38 +159,40 @@ const Title = styled.h1`
     z-index: -1;
     background: none;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 80px rgba(118, 75, 162, 0.5);
+    text-shadow: 0 0 80px rgba(150, 100, 200, 0.5);
+  }
+
+  @media (min-width: 769px) {
+    font-size: 5rem;
+  }
+
+  @media (min-width: 1025px) {
+    font-size: 6.5rem;
   }
 `;
 
 const Button = styled.button`
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2),
-    rgba(118, 75, 162, 0.2)
-  );
+  background: rgba(190, 144, 255, 0.3);
   backdrop-filter: blur(10px);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: white;
+  border: 1px solid rgba(200, 160, 255, 0.5);
   border-radius: 100px;
-  font-size: 1.1rem;
-  font-weight: 400;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  margin-top: 4.5rem;
-  padding: 1rem 3.5rem;
+  margin-top: 4rem;
+  padding: 1rem 2.5rem;
   min-width: 180px;
   transition: all 0.3s ease;
-  width: 28rem;
+  width: 100%;
+  max-width: 90%;
   letter-spacing: 0.5px;
+  box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(102, 126, 234, 0.25),
-      rgba(118, 75, 162, 0.25)
-    );
-    transform: translateY(-1px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+    background: rgba(190, 150, 250, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 35px rgba(150, 100, 200, 0.4);
   }
 
   &:active {
@@ -168,13 +200,28 @@ const Button = styled.button`
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
   }
 
-  @media (min-width: 768px) {
-    width: auto;
+  @media (min-width: 481px) {
+    margin-top: 6rem;
+    font-size: 1.05rem;
+    padding: 1rem 3rem;
+  }
+
+  @media (min-width: 769px) {
+    margin-top: 8rem;
+    font-size: 1.1rem;
+    padding: 1rem 3.25rem;
+    width: 28rem;
+  }
+
+  @media (min-width: 1025px) {
+    margin-top: 12rem;
+    padding: 1rem 3.5rem;
   }
 `;
 

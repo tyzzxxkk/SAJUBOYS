@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { SajuResult, SajuResultDocument } from './schemas/saju-result.schema';
@@ -52,6 +52,7 @@ export class SajuService {
   async calculateSaju(userId: string | null, dto: CalculateSajuDto) {
     const { gender, birthDate, birthTime, isTimeUnknown } = dto;
 
+    // 입력 생년월일·시간을 Date 객체로 변환해 명식을 계산할 기준 시각으로 사용한다
     const [birthYear, birthMonth, birthDay] = birthDate.split('-').map(Number);
     const [birthHour, birthMinute] = birthTime.split(':').map(Number);
     const birthDateTime = new Date(
@@ -78,6 +79,7 @@ export class SajuService {
           birthDateTime.getHours(),
         );
 
+    // 계산된 기둥을 한 구조체에 담아 이후 해석 로직에서 일관되게 사용한다
     const fourPillars: FourPillars = {
       year: yearPillar,
       month: monthPillar,
@@ -85,6 +87,7 @@ export class SajuService {
       time: timePillar,
     };
 
+    // 오행·음양·대운 등 해석에 필요한 보조 지표들을 미리 산출한다
     const elements = this.analyzeElements(fourPillars);
     const yinYang = this.analyzeYinYang(fourPillars);
     const daeun = SajuCalculator.calculateDaeun(gender, monthPillar);
@@ -121,6 +124,7 @@ export class SajuService {
   private analyzeElements(fourPillars: FourPillars): Elements {
     const elements: Elements = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
 
+    // 각 기둥의 천간·지지를 대응 오행으로 변환해 빈도를 누적한다
     [fourPillars.year, fourPillars.month, fourPillars.day, fourPillars.time]
       .filter((p): p is Pillar => p !== null)
       .forEach(({ heaven, earth }) => {
@@ -138,6 +142,7 @@ export class SajuService {
     let yin = 0;
     let yang = 0;
 
+    // 천간·지지 각각을 음과 양으로 분류해 균형 정도를 계산한다
     [fourPillars.year, fourPillars.month, fourPillars.day, fourPillars.time]
       .filter((p): p is Pillar => p !== null)
       .forEach(({ heaven, earth }) => {
@@ -161,6 +166,7 @@ export class SajuService {
     const dayHeavenly = fourPillars.day.heaven;
     const yearEarth = fourPillars.year.earth;
 
+    // 일간으로 기본 성격 틀을 찾고, 강·약점을 함께 서술한다
     const personalityInfo =
       SajuInterpreter.PERSONALITY_BY_DAY_STEM[dayHeavenly];
     const personality = personalityInfo
@@ -170,6 +176,7 @@ export class SajuService {
     const elementBalance = SajuInterpreter.interpretFiveElements(elements);
     const yinYangBalance = this.interpretYinYangBalance(yinYang);
 
+    // 연도별 변화를 반영한 고급 해석을 생성한다
     const timelyFortune = await SajuAdvancedInterpreter.generateTimelyFortune(
       { ...fourPillars, time: fourPillars.time ?? undefined },
       currentYear,
@@ -205,6 +212,7 @@ export class SajuService {
   }
 
   async getSavedResults(userId: string) {
+    // 최신 결과가 먼저 오도록 정렬해 사용자가 최근 기록을 빠르게 확인하게 한다
     return this.sajuResultModel
       .find({ userId: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
@@ -212,6 +220,7 @@ export class SajuService {
   }
 
   async getSajuById(userId: string, sajuId: string) {
+    // 사용자 소유의 단일 결과만 조회해 다른 사람의 데이터를 차단한다
     return this.sajuResultModel
       .findOne({
         _id: new Types.ObjectId(sajuId),
@@ -220,6 +229,7 @@ export class SajuService {
       .exec();
   }
 
+  // 음양 비율에 따른 해석 문구를 생성해 사용자에게 전달한다
   private interpretYinYangBalance(yinYang: YinYang): string {
     const total = yinYang.yin + yinYang.yang;
     const yinRatio = (yinYang.yin / total) * 100;
@@ -244,9 +254,9 @@ export class SajuService {
       _id: new Types.ObjectId(sajuId),
     });
 
-    if (!result) throw new Error('결과를 찾을 수 없습니다.');
+    if (!result) throw new NotFoundException('결과를 찾을 수 없습니다.');
     if (result.userId && result.userId.toString() !== userId) {
-      throw new Error('다른 사용자의 결과입니다.');
+      throw new ForbiddenException('다른 사용자의 결과입니다.');
     }
 
     result.userId = new Types.ObjectId(userId);
@@ -255,10 +265,15 @@ export class SajuService {
   }
 
   async deleteResult(userId: string, sajuId: string) {
-    return this.sajuResultModel.deleteOne({
+    // 삭제 대상이 본인 소유인지 조건으로 한 번 더 확인한다
+    const { deletedCount } = await this.sajuResultModel.deleteOne({
       _id: new Types.ObjectId(sajuId),
       userId: new Types.ObjectId(userId),
     });
+
+    if (!deletedCount) {
+      throw new NotFoundException('삭제할 결과를 찾을 수 없습니다.');
+    }
   }
 
   async searchAddress(query: string): Promise<AddressResult[]> {
@@ -271,6 +286,7 @@ export class SajuService {
     const searchQuery = query.toLowerCase().replace(/\s+/g, '');
     const uniqueResults = new Map<string, AddressResult>();
 
+    // 도시·구 이름을 공백 제거 상태로 비교해 사소한 입력 오타에도 대응한다
     KOREA_COORDINATES.forEach((coord) => {
       const cityDistrict = `${coord.city}${coord.district}`
         .toLowerCase()

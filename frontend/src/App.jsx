@@ -60,6 +60,7 @@ function App() {
   return (
     <>
       <GlobalStyle />
+      {/* 인증과 사주 상태를 전역으로 공유해 라우팅 간 데이터 일관성을 유지한다 */}
       <AuthProvider>
         <SajuProvider>
           <BrowserRouter>

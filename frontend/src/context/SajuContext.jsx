@@ -27,6 +27,7 @@ export const SajuProvider = ({ children }) => {
 
   const calculateSaju = async (inputData) => {
     try {
+      // 계산 요청 전 로딩 상태를 true로 전환한다
       dispatch({ type: 'SET_LOADING', payload: true });
 
       const response = await sajuAPI.calculate(inputData);
@@ -38,6 +39,7 @@ export const SajuProvider = ({ children }) => {
 
       throw new Error(response.message || '사주 계산에 실패했습니다');
     } catch (error) {
+      // 서버 또는 네트워크 에러 메시지를 사용자에게 전달할 문자열로 통일한다
       const errorMessage =
         error.response?.data?.message ||
         error.message ||

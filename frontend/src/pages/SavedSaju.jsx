@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { sajuAPI } from "../services/api";
+import { formatBirthTimeDisplay } from "../utils/birthTime";
 
 const float1 = keyframes`
   0%, 100% {
@@ -53,7 +54,7 @@ const GradientCircle1 = styled.div`
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0) 0%,
-    rgba(98, 0, 255, 0.31) 50%,
+    rgba(135, 60, 255, 0.3) 50%,
     #0e0025 100%
   );
   top: -200px;
@@ -78,7 +79,7 @@ const GradientCircle2 = styled.div`
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0) 0%,
-    rgba(98, 0, 255, 0.31) 50%,
+    rgba(135, 60, 255, 0.3) 50%,
     #0e0025 100%
   );
   bottom: -150px;
@@ -117,47 +118,47 @@ const Title = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-size: 3rem;
-  font-weight: 800;
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin: 0;
   margin-bottom: 1.5rem;
   font-family: "Cinzel", cursive;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-align: center;
   position: relative;
+  line-height: 1.2;
 
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
+    font-size: 2.8rem;
+    letter-spacing: 2px;
+  }
+
+  @media (min-width: 1025px) {
     font-size: 3.5rem;
   }
 `;
 
 const BackButton = styled.button`
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2),
-    rgba(118, 75, 162, 0.2)
-  );
+  background: rgba(190, 144, 255, 0.3);
   backdrop-filter: blur(10px);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: white;
+  border: 1px solid rgba(200, 160, 255, 0.5);
   border-radius: 100px;
-  font-size: 1.1rem;
-  font-weight: 400;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  padding: 1rem 3.25rem;
+  padding: 1rem 2.5rem;
   min-width: 180px;
   transition: all 0.3s ease;
   position: absolute;
   top: 25px;
   right: 40px;
+  box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(102, 126, 234, 0.25),
-      rgba(118, 75, 162, 0.25)
-    );
-    transform: translateY(-1px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+    background: rgba(190, 150, 250, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(150, 100, 200, 0.4);
   }
 
   &:active {
@@ -165,9 +166,10 @@ const BackButton = styled.button`
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
   }
 
   @media (min-width: 768px) {
@@ -194,8 +196,8 @@ const SavedCard = styled.div`
   &:hover {
     transform: translateY(-1px);
     background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(102, 126, 234, 0.3);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    border-color: rgba(180, 140, 230, 0.6);
+    box-shadow: 0 0 25px rgba(150, 100, 200, 0.4);
   }
 `;
 
@@ -252,31 +254,24 @@ const EmptyDescription = styled.p`
 `;
 
 const CalculateButton = styled.button`
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2),
-    rgba(118, 75, 162, 0.2)
-  );
+  background: rgba(190, 144, 255, 0.3);
   backdrop-filter: blur(10px);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: white;
+  border: 1px solid rgba(200, 160, 255, 0.5);
   border-radius: 100px;
-  font-size: 1.2rem;
-  font-weight: 400;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  padding: 1.1rem 3.25rem;
+  padding: 1rem 2.5rem;
   min-width: 180px;
   transition: all 0.3s ease;
   margin-top: 20px;
+  box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(102, 126, 234, 0.25),
-      rgba(118, 75, 162, 0.25)
-    );
-    transform: translateY(-1px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+    background: rgba(190, 150, 250, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(150, 100, 200, 0.4);
   }
 
   &:active {
@@ -284,9 +279,10 @@ const CalculateButton = styled.button`
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
   }
 
   @media (min-width: 768px) {
@@ -329,6 +325,7 @@ const SavedSaju = () => {
   }, []);
 
   const loadSavedResults = async () => {
+    // 서버에서 최신 저장 목록을 받아온다
     try {
       setLoading(true);
       const response = await sajuAPI.getSavedResults();
@@ -347,7 +344,7 @@ const SavedSaju = () => {
       const response = await sajuAPI.getSajuById(sajuId);
 
       if (response.success) {
-        // 결과 페이지로 이동하면서 데이터 전달
+        // 상세 페이지로 이동하면서 조회한 데이터를 함께 전달
         navigate("/saju-result", {
           state: {
             resultData: response.data,
@@ -363,27 +360,20 @@ const SavedSaju = () => {
   };
 
   const handleDelete = async (e, sajuId) => {
-    e.stopPropagation(); // 카드 클릭 이벤트 방지
+    e.stopPropagation(); // 카드 이동 이벤트 중단
 
     if (!window.confirm("정말로 삭제하시겠습니까?")) {
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/api/saju/${sajuId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("user"))?.accessToken
-          }`,
-        },
-      });
+      // 인터셉터가 자동으로 토큰을 주입하므로 추가 헤더 없이 호출한다
+      const response = await sajuAPI.deleteSaju(sajuId);
 
-      if (response.ok) {
-        // 삭제 성공 시 목록 새로고침
+      if (response.success) {
         loadSavedResults();
       } else {
-        alert("삭제에 실패했습니다");
+        alert(response.message || "삭제에 실패했습니다");
       }
     } catch {
       alert("삭제에 실패했습니다");
@@ -399,10 +389,8 @@ const SavedSaju = () => {
     });
   };
 
-  const formatTime = (timeString) => {
-    if (!timeString || timeString === "00:00") return "시간 모름";
-    return timeString;
-  };
+  const formatTime = (result) =>
+    formatBirthTimeDisplay(result.birthTime, result.isTimeUnknown);
 
   if (loading) {
     return (
@@ -454,7 +442,7 @@ const SavedSaju = () => {
                   </InfoRow>
                   <InfoRow>
                     <InfoLabel>출생시간:</InfoLabel>
-                    <InfoValue>{formatTime(result.birthTime)}</InfoValue>
+                    <InfoValue>{formatTime(result)}</InfoValue>
                   </InfoRow>
                   <InfoRow>
                     <InfoLabel>성별:</InfoLabel>

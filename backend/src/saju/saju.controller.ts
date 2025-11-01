@@ -20,6 +20,7 @@ import type { AuthenticatedRequest } from '../common/interfaces/request.interfac
 export class SajuController {
   constructor(private sajuService: SajuService) {}
 
+  // 검색어 일부만으로도 주소 후보를 빠르게 제안한다
   @Get('search-address')
   async searchAddress(@Query() dto: SearchAddressDto) {
     return {
@@ -34,6 +35,7 @@ export class SajuController {
     @Body(ValidationPipe) dto: CalculateSajuDto,
   ) {
     const userId = req.user?._id || null;
+    // 로그인 사용자는 결과를 즉시 저장할 수 있도록 ID를 전달한다
     return {
       success: true,
       message: '사주 계산이 완료되었습니다',
@@ -41,6 +43,7 @@ export class SajuController {
     };
   }
 
+  // 인증된 사용자는 자신이 저장한 결과 목록만 조회할 수 있다
   @Get('saved')
   @UseGuards(JwtAuthGuard)
   async getSavedResults(@Request() req: AuthenticatedRequest) {
@@ -83,6 +86,7 @@ export class SajuController {
     @Request() req: AuthenticatedRequest,
     @Param('id') sajuId: string,
   ) {
+    // 소유자 식별자 비교는 서비스 레이어에서 한 번 더 검증한다
     await this.sajuService.deleteResult(req.user._id, sajuId);
     return {
       success: true,

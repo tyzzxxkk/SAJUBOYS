@@ -10,6 +10,7 @@ import { CommonModule } from './common/common.module';
     CommonModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
+      // 환경설정 모듈에서 DB 접속 정보를 가져와 런타임에 연결한다
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('database.uri'),
       }),

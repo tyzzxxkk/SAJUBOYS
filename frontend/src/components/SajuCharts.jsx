@@ -61,6 +61,7 @@ const COLORS = {
 const YIN_YANG_COLORS = ['#ef4444', '#3b82f6'];
 
 export function SajuCharts({ elements, yinYang }) {
+  // 오행 카운트를 리차트에서 요구하는 데이터 구조로 정규화한다
   const elementsData = elements
     ? Object.entries(elements).map(([key, value]) => ({
         name: key,
@@ -85,6 +86,7 @@ export function SajuCharts({ elements, yinYang }) {
       }))
     : [];
 
+  // 다크 테마에 맞춘 커스텀 툴팁 스타일 정의
   const customTooltipStyle = {
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     border: '1px solid rgba(255, 255, 255, 0.2)',

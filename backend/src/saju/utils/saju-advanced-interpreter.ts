@@ -78,6 +78,7 @@ export class SajuAdvancedInterpreter {
     수: '신장과 방광 건강에 유의하세요. 충분한 수분 섭취가 중요합니다.',
   };
 
+  // 연도·오행·음양 정보를 조합해 올해의 주요 운세를 생성한다
   static async generateTimelyFortune(
     fourPillars: FourPillars,
     currentYear: number,
@@ -117,6 +118,7 @@ export class SajuAdvancedInterpreter {
     return this.EARTHLY_BRANCHES[year % 12];
   }
 
+  // 일간과 연간의 관계에 따라 전체적인 흐름을 설명한다
   static getYearlyOverallFortune(dayMaster: string, yearStem: string): string {
     const relationship = this.getElementRelationship(dayMaster, yearStem);
     const sipseong = this.getSipseong(dayMaster, yearStem);
@@ -154,6 +156,7 @@ export class SajuAdvancedInterpreter {
     return this.SIPSEONG_RELATIONS[dayElement]?.[targetElement] || '비겁';
   }
 
+  // 연지의 도화살 여부를 바탕으로 연애운을 도출한다
   static getLoveFortune(_dayMaster: string, yearBranch: string): string {
     let fortune = '💕 연애운: ';
 
@@ -177,6 +180,7 @@ export class SajuAdvancedInterpreter {
     관성: '직장에서의 승진이나 안정적인 급여가 기대되는 해입니다. 정직하고 성실한 태도로 일하면 정당한 보상을 받을 수 있습니다.',
   };
 
+  // 시비성(십성) 해석을 활용해 재물운 메시지를 선택한다
   static getWealthFortune(dayMaster: string, yearStem: string): string {
     const sipseong = this.getSipseong(dayMaster, yearStem);
     return (
@@ -186,6 +190,7 @@ export class SajuAdvancedInterpreter {
     );
   }
 
+  // 부족한 오행을 찾아 해당 장부의 건강 수칙을 제시한다
   static getHealthFortune(_dayMaster: string, elements?: Elements): string {
     if (!elements) {
       return '🏥 건강운: 규칙적인 생활과 적절한 휴식이 필요합니다.';
@@ -202,6 +207,7 @@ export class SajuAdvancedInterpreter {
     return `🏥 건강운: ${this.HEALTH_ADVICE[minElement.element] || '전반적인 건강 관리가 필요합니다.'}`;
   }
 
+  // Gemini API를 호출해 맞춤형 행동 가이드를 생성한다
   static async getPersonalizedAdvice(
     dayMaster: string,
     yearStem: string,
@@ -295,6 +301,7 @@ export class SajuAdvancedInterpreter {
     }
   }
 
+  // AI 응답에서 JSON 블록만 발췌해 파싱 가능하도록 정제한다
   private static extractJSON(text: string): string {
     let jsonText = text.trim();
 
@@ -316,6 +323,7 @@ export class SajuAdvancedInterpreter {
     return jsonText;
   }
 
+  // 키워드와 체크리스트를 가독성 있는 문장으로 변환한다
   private static formatAdvice(aiResult: {
     keywords?: string[];
     shouldDo?: string[];
@@ -358,6 +366,7 @@ export class SajuAdvancedInterpreter {
     수: '화',
   };
 
+  // 두 천간 간의 상생/상극 관계를 판단해 시비성을 결정한다
   private static getElementRelationship(
     stem1: string,
     stem2: string,

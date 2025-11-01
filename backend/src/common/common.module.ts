@@ -6,6 +6,7 @@ import configuration from './config/configuration';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      // 설정 객체를 전역으로 노출해 다른 모듈에서 반복 설정을 피한다
       load: [configuration],
       isGlobal: true,
     }),

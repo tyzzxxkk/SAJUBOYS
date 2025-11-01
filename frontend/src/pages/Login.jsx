@@ -52,7 +52,7 @@ const GradientCircle1 = styled.div`
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0) 0%,
-    rgba(98, 0, 255, 0.31) 50%,
+    rgba(135, 60, 255, 0.3) 50%,
     #0e0025 100%
   );
   top: -200px;
@@ -77,7 +77,7 @@ const GradientCircle2 = styled.div`
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0) 0%,
-    rgba(98, 0, 255, 0.31) 50%,
+    rgba(135, 60, 255, 0.3) 50%,
     #0e0025 100%
   );
   bottom: -150px;
@@ -116,14 +116,21 @@ const Title = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-size: 3rem;
-  font-weight: 800;
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin: 0;
   margin-bottom: 1.5rem;
   font-family: "Cinzel", cursive;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   position: relative;
+  line-height: 1.2;
 
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
+    font-size: 2.8rem;
+    letter-spacing: 2px;
+  }
+
+  @media (min-width: 1025px) {
     font-size: 3.5rem;
   }
 `;
@@ -164,37 +171,30 @@ const Input = styled.input`
   &:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(102, 126, 234, 0.5);
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+    border-color: rgba(180, 140, 230, 0.6);
+    box-shadow: 0 0 25px rgba(150, 100, 200, 0.4);
   }
 `;
 
 const Button = styled.button`
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2),
-    rgba(118, 75, 162, 0.2)
-  );
+  background: rgba(190, 144, 255, 0.3);
   backdrop-filter: blur(10px);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: white;
+  border: 1px solid rgba(200, 160, 255, 0.5);
   border-radius: 100px;
-  font-size: 1.1rem;
-  font-weight: 400;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
   margin-top: 1.2rem;
-  padding: 1rem 3.25rem;
+  padding: 1rem 2.5rem;
   transition: all 0.3s ease;
   width: 100%;
+  box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(102, 126, 234, 0.25),
-      rgba(118, 75, 162, 0.25)
-    );
-    transform: translateY(-1px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+    background: rgba(190, 150, 250, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(150, 100, 200, 0.4);
   }
 
   &:active {
@@ -202,15 +202,16 @@ const Button = styled.button`
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
   }
 `;
 
 const LinkText = styled.p`
   color: rgba(255, 255, 255, 0.5);
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   font-size: 0.9rem;
 
   a {
@@ -249,8 +250,9 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // 이전 오류 메시지 초기화
+    setError("");
 
+    // 필수 입력 누락 시 서버 호출 전에 사용자에게 즉시 안내한다
     if (!formData.email || !formData.password) {
       setError("모든 필드를 입력해주세요");
       return;
@@ -259,6 +261,7 @@ function Login() {
     const result = await login(formData.email, formData.password);
 
     if (result.success) {
+      // 로그인 성공 후 바로 사주 입력 화면으로 이동시켜 흐름을 유지한다
       navigate("/saju-input");
     } else {
       setError(result.error || "로그인에 실패했습니다");

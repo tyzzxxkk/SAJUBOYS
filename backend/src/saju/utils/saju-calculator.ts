@@ -137,6 +137,7 @@ export class SajuCalculator {
   private static readonly DAEUN_CYCLE = 10;
   private static readonly DAEUN_COUNT = 8;
 
+  // 기준 연도로부터 오차를 계산해 해당 연도의 갑자(천간·지지)를 도출한다
   static getSixtyGapja(year: number): Pillar {
     const diff = year - this.BASE_YEAR;
     const heavenIndex = ((diff % 10) + 10) % 10;
@@ -148,6 +149,7 @@ export class SajuCalculator {
     };
   }
 
+  // 입춘 이전 출생은 전년도 명식으로 간주해 사주년을 보정한다
   static getSajuYear(birthDate: Date): number {
     const year = birthDate.getFullYear();
     const month = birthDate.getMonth() + 1;
@@ -163,6 +165,7 @@ export class SajuCalculator {
       : year;
   }
 
+  // 연간에 따라 월간 시작점이 달라지는 규칙을 적용해 월주를 계산한다
   static getMonthPillar(yearHeavenly: string, month: number): Pillar {
     const startIndex = this.MONTH_HEAVEN_START[yearHeavenly];
     const heavenIndex = (startIndex + month - 1) % 10;
@@ -173,6 +176,7 @@ export class SajuCalculator {
     };
   }
 
+  // 기준 일자와의 차이를 이용해 일간·일지를 구한다
   static getDayPillar(date: Date): Pillar {
     const diffTime = Math.abs(date.getTime() - this.BASE_DATE.getTime());
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -198,6 +202,7 @@ export class SajuCalculator {
     return 11;
   }
 
+  // 일간과 시각을 조합해 시주의 천간·지지를 선택한다
   static getTimePillar(dayHeavenly: string, hour: number): Pillar {
     const timeIndex = this.getTimeIndex(hour);
     const dayHeavenIndex = this.HEAVENLY_STEMS.indexOf(dayHeavenly);
@@ -209,6 +214,7 @@ export class SajuCalculator {
     };
   }
 
+  // 성별과 연주를 기반으로 대운 흐름(10년 주기)을 산출한다
   static calculateDaeun(gender: string, yearPillar: Pillar): DaeunPillar[] {
     const yearHeavenIndex = this.HEAVENLY_STEMS.indexOf(yearPillar.heaven);
     const isYang = yearHeavenIndex % 2 === 0;
@@ -243,10 +249,12 @@ export class SajuCalculator {
     return daeunList;
   }
 
+  // 해당 연도의 갑자를 그대로 사용해 세운을 결정한다
   static calculateSaeun(currentYear: number): Pillar {
     return this.getSixtyGapja(currentYear);
   }
 
+  // 날짜가 속한 절기를 역순 탐색으로 찾아 반환한다
   static getSolarTerm(date: Date): string {
     const month = date.getMonth() + 1;
     const day = date.getDate();
@@ -261,6 +269,7 @@ export class SajuCalculator {
     return this.SOLAR_TERMS[this.SOLAR_TERMS.length - 1].name;
   }
 
+  // 절기 경계를 기준으로 음력 월(절기월)을 판별한다
   static getSolarMonth(date: Date): number {
     const month = date.getMonth() + 1;
     const day = date.getDate();

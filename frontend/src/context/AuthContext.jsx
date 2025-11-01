@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
+    // 페이지 새로 고침 이후에도 로그인 상태를 복원한다
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
       try {
@@ -59,6 +60,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    // 인증 API 호출 전 로딩 상태를 표시한다
     dispatch({ type: "SET_LOADING", payload: true });
 
     const response = await authAPI.login({ email, password });
@@ -82,6 +84,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (name, email, password) => {
     try {
+      // 신규 회원가입 요청 전에 로딩 상태를 설정한다
       dispatch({ type: "SET_LOADING", payload: true });
 
       const response = await authAPI.signup({ name, email, password });

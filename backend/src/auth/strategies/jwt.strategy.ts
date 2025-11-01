@@ -21,6 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<UserPayload | null> {
+    // 토큰에 포함된 사용자 식별자를 바탕으로 인증 대상을 확인한다
     return this.authService.validateUser(payload);
   }
 }

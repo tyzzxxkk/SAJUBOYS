@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styled, { keyframes } from "styled-components";
 import { useSaju } from "../context/SajuContext";
 import { useAuth } from "../context/AuthContext";
-import styled, { keyframes } from "styled-components";
 import AddressSearch from "../components/AddressSearch";
 import DateInput from "../components/DateInput";
 import LoadingSpinner from "../components/LoadingSpinner";
+import {
+  BIRTH_TIME_OPTIONS,
+  resolveBirthTimeForApi,
+} from "../utils/birthTime";
 
 const float1 = keyframes`
   0%, 100% {
@@ -43,10 +47,9 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   background-color: black;
-  min-height: 100vh;
   height: 100vh;
-  width: 100vw;
-  position: fixed;
+  width: 100%;
+  position: relative;
   overflow: hidden;
   padding: 0;
   margin: 0;
@@ -56,10 +59,23 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   z-index: 1;
   width: 100%;
-  margin-top: 1rem;
+  max-width: 100%;
+  height: 100%;
+  padding: 2vh 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  @media (min-width: 769px) {
+    padding: 3vh 2rem;
+  }
+
+  @media (min-width: 1025px) {
+    padding: 4vh 2rem;
+  }
 `;
 
 const GradientCircle1 = styled.div`
@@ -70,7 +86,7 @@ const GradientCircle1 = styled.div`
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0) 0%,
-    rgba(98, 0, 255, 0.31) 50%,
+    rgba(135, 60, 255, 0.3) 50%,
     #0e0025 100%
   );
   top: -200px;
@@ -95,7 +111,7 @@ const GradientCircle2 = styled.div`
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0) 0%,
-    rgba(98, 0, 255, 0.31) 50%,
+    rgba(135, 60, 255, 0.3) 50%,
     #0e0025 100%
   );
   bottom: -150px;
@@ -119,21 +135,35 @@ const Title = styled.h1`
   background-clip: text;
   font-size: 3rem;
   font-weight: 900;
-  margin-bottom: 1.5rem;
+  margin: 1rem;
   font-family: "Cinzel Decorative", cursive;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   position: relative;
+  line-height: 1.2;
 
-  @media (min-width: 768px) {
-    font-size: 3.5rem;
+  @media (min-width: 769px) {
+    font-size: 3.2rem;
+    letter-spacing: 2px;
+  }
+
+  @media (min-width: 1025px) {
+    font-size: 3.6rem;
   }
 `;
 
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.8rem;
-  width: 800px;
+  margin: 0;
+  margin-bottom: 1.2rem;
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+
+  @media (min-width: 769px) {
+    width: 90%;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const Input = styled.input`
@@ -142,13 +172,14 @@ const Input = styled.input`
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   margin-bottom: 0;
   width: 100%;
-  padding: 1.25rem 2rem;
+  padding: 0.9rem 1.5rem;
   box-sizing: border-box;
   transition: all 0.3s ease;
+  height: 3.2rem;
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
@@ -157,46 +188,52 @@ const Input = styled.input`
   &:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(102, 126, 234, 0.5);
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+    border-color: rgba(180, 140, 230, 0.6);
+    box-shadow: 0 0 25px rgba(150, 100, 200, 0.4);
+  }
+
+  @media (min-width: 769px) {
+    height: 3.5rem;
+    padding: 1rem 1.8rem;
+    font-size: 0.95rem;
   }
 `;
 
 const Label = styled.label`
   color: rgba(255, 255, 255, 0.9);
-  font-size: 0.95rem;
-  margin-bottom: 0.7rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
   font-weight: 500;
   letter-spacing: 0.5px;
+
+  @media (min-width: 769px) {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const Button = styled.button`
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2),
-    rgba(118, 75, 162, 0.2)
-  );
+  background: rgba(190, 144, 255, 0.3);
   backdrop-filter: blur(10px);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: white;
+  border: 1px solid rgba(200, 160, 255, 0.5);
   border-radius: 100px;
-  font-size: 1.1rem;
-  font-weight: 400;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  margin-top: 1rem;
-  padding: 1rem 3.25rem;
+  margin: 0;
+  margin-top: 0.5rem;
+  padding: 1rem 2.5rem;
   min-width: 180px;
   transition: all 0.3s ease;
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(102, 126, 234, 0.25),
-      rgba(118, 75, 162, 0.25)
-    );
-    transform: translateY(-1px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+    background: rgba(190, 150, 250, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(150, 100, 200, 0.4);
   }
 
   &:active {
@@ -204,9 +241,17 @@ const Button = styled.button`
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    box-shadow: 0 6px 25px rgba(150, 100, 200, 0.2);
+  }
+
+  @media (min-width: 769px) {
+    width: 90%;
+    font-size: 1.05rem;
+    padding: 1.1rem 3rem;
+    margin-top: 0.8rem;
   }
 `;
 
@@ -217,32 +262,42 @@ const ToggleWrapper = styled.div`
   backdrop-filter: blur(10px);
   border-radius: 16px;
   width: 100%;
+  height: 3.2rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-sizing: border-box;
   padding: 4px;
+
+  @media (min-width: 769px) {
+    height: 3.5rem;
+  }
 `;
 
 const ToggleButton = styled.button`
   flex: 1;
-  padding: 1rem 1.5rem;
+  padding: 0 1.5rem;
   background: ${(props) =>
-    props.$active
-      ? "linear-gradient(135deg, rgba(102, 126, 234, 0.4), rgba(118, 75, 162, 0.4))"
-      : "transparent"};
+    props.$active ? "rgba(200, 160, 255, 0.35)" : "transparent"};
   color: ${(props) => (props.$active ? "white" : "rgba(255, 255, 255, 0.5)")};
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: ${(props) => (props.$active ? "500" : "400")};
+  box-shadow: ${(props) =>
+    props.$active ? "0 4px 20px rgba(150, 100, 200, 0.4)" : "none"};
+  height: 100%;
 
   &:hover {
     background: ${(props) =>
       props.$active
-        ? "linear-gradient(135deg, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))"
+        ? "rgba(200, 160, 255, 0.45)"
         : "rgba(255, 255, 255, 0.05)"};
     color: ${(props) => (props.$active ? "white" : "rgba(255, 255, 255, 0.7)")};
+  }
+
+  @media (min-width: 769px) {
+    font-size: 0.95rem;
   }
 `;
 
@@ -254,31 +309,41 @@ const DateToggleWrapper = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   width: 180px;
+  height: 3.2rem;
   box-sizing: border-box;
   padding: 4px;
+
+  @media (min-width: 769px) {
+    height: 3.5rem;
+  }
 `;
 
 const DateToggleButton = styled.button`
   flex: 1;
-  padding: 1.1rem 0.8rem;
+  padding: 0 0.8rem;
   background: ${(props) =>
-    props.$active
-      ? "linear-gradient(135deg, rgba(102, 126, 234, 0.4), rgba(118, 75, 162, 0.4))"
-      : "transparent"};
+    props.$active ? "rgba(200, 160, 255, 0.35)" : "transparent"};
   color: ${(props) => (props.$active ? "white" : "rgba(255, 255, 255, 0.5)")};
   border: none;
   border-radius: 12px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: ${(props) => (props.$active ? "500" : "400")};
+  box-shadow: ${(props) =>
+    props.$active ? "0 4px 20px rgba(150, 100, 200, 0.4)" : "none"};
+  height: 100%;
 
   &:hover {
     background: ${(props) =>
       props.$active
-        ? "linear-gradient(135deg, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5))"
+        ? "rgba(200, 160, 255, 0.45)"
         : "rgba(255, 255, 255, 0.05)"};
     color: ${(props) => (props.$active ? "white" : "rgba(255, 255, 255, 0.7)")};
+  }
+
+  @media (min-width: 769px) {
+    font-size: 0.95rem;
   }
 `;
 
@@ -299,28 +364,34 @@ const TimeSelect = styled.select`
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   width: 240px;
-  padding: 1.15rem 1.5rem;
+  padding: 0 1.5rem;
+  height: 3.2rem;
   box-sizing: border-box;
   appearance: none;
   background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3e%3cpolyline points="6 9 12 15 18 9"%3e%3c/polyline%3e%3c/svg%3e');
   background-repeat: no-repeat;
-  background-position: right 1.5rem center;
-  background-size: 20px;
+  background-position: right 1.2rem center;
+  background-size: 18px;
   transition: all 0.3s ease;
 
   &:focus {
     outline: none;
     background-color: rgba(255, 255, 255, 0.12);
-    border-color: rgba(102, 126, 234, 0.5);
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+    border-color: rgba(180, 140, 230, 0.6);
+    box-shadow: 0 0 25px rgba(150, 100, 200, 0.4);
   }
 
   option {
     background-color: #1a1a1a;
     color: white;
+  }
+
+  @media (min-width: 769px) {
+    height: 3.5rem;
+    font-size: 0.95rem;
   }
 `;
 
@@ -337,7 +408,7 @@ function SajuInput() {
   const [resultData, setResultData] = useState(null);
 
   const handleSajuAnalysis = async () => {
-    // 입력값 검증
+    // 필수 입력값 검증
     if (!name || !name.trim()) {
       alert("이름을 입력해주세요");
       return;
@@ -358,40 +429,22 @@ function SajuInput() {
       return;
     }
 
-    // 시간 처리 (API 형식에 맞게)
-    let formattedTime = "00:00"; // 시간 모름일 때는 사용되지 않지만 빈 값 방지용
-    if (birthTime !== "unknown") {
-      const timeMap = {
-        "23-01": "00:00",
-        "01-03": "02:00",
-        "03-05": "04:00",
-        "05-07": "06:00",
-        "07-09": "08:00",
-        "09-11": "10:00",
-        "11-13": "12:00",
-        "13-15": "14:00",
-        "15-17": "16:00",
-        "17-19": "18:00",
-        "19-21": "20:00",
-        "21-23": "22:00",
-      };
-      formattedTime = timeMap[birthTime] || "00:00";
-    }
+    const { time: formattedTime, isTimeUnknown } =
+      resolveBirthTimeForApi(birthTime);
 
-    // API 형식에 맞게 데이터 포맷팅
+    // 백엔드 API 규격에 맞춰 요청 객체 구성
     const formData = {
       name: name.trim(),
       gender: gender === "male" ? "남" : "여",
       birthDate: `${birthDate.getFullYear()}-${String(
         birthDate.getMonth() + 1
-      ).padStart(2, "0")}-${String(birthDate.getDate()).padStart(2, "0")}`, // YYYY-MM-DD 형식 (로컬 시간 기준)
-      birthTime: formattedTime, // HH:MM 형식
+      ).padStart(2, "0")}-${String(birthDate.getDate()).padStart(2, "0")}`,
+      birthTime: formattedTime,
       calendarType: calendarType === "solar" ? "양력" : "음력",
       city: city.trim(),
     };
 
-    // 시간 모름일 때만 isTimeUnknown 추가
-    if (birthTime === "unknown") {
+    if (isTimeUnknown) {
       formData.isTimeUnknown = true;
     }
 
@@ -400,7 +453,6 @@ function SajuInput() {
 
       if (result.success) {
         setResultData(result.data);
-        // 버튼 클릭으로 이동
       } else {
         alert(result.error || "사주 계산에 실패했습니다");
       }
@@ -413,22 +465,7 @@ function SajuInput() {
     navigate("/saved-saju");
   };
 
-  const timeOptions = [
-    { value: "", label: "시간을 선택해주세요" },
-    { value: "unknown", label: "시간 모름" },
-    { value: "23-01", label: "자시 (23:00 - 01:00)" },
-    { value: "01-03", label: "축시 (01:00 - 03:00)" },
-    { value: "03-05", label: "인시 (03:00 - 05:00)" },
-    { value: "05-07", label: "묘시 (05:00 - 07:00)" },
-    { value: "07-09", label: "진시 (07:00 - 09:00)" },
-    { value: "09-11", label: "사시 (09:00 - 11:00)" },
-    { value: "11-13", label: "오시 (11:00 - 13:00)" },
-    { value: "13-15", label: "미시 (13:00 - 15:00)" },
-    { value: "15-17", label: "신시 (15:00 - 17:00)" },
-    { value: "17-19", label: "유시 (17:00 - 19:00)" },
-    { value: "19-21", label: "술시 (19:00 - 21:00)" },
-    { value: "21-23", label: "해시 (21:00 - 23:00)" },
-  ];
+  const timeOptions = BIRTH_TIME_OPTIONS;
 
   return (
     <Container>
@@ -528,7 +565,7 @@ function SajuInput() {
           onSkip={
             resultData
               ? () => {
-                  setLoading(false); // 버튼 클릭 시 로딩 상태 해제
+                  setLoading(false); // 결과 확인 버튼으로 오버레이 닫기
                   navigate("/saju-result", { state: resultData });
                 }
               : null

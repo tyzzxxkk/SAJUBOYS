@@ -63,8 +63,8 @@ const OuterRing = styled.div`
   width: 100%;
   height: 100%;
   border: 3px solid transparent;
-  border-top: 3px solid #667eea;
-  border-right: 3px solid #764ba2;
+  border-top: 3px solid rgba(200, 160, 255, 0.8);
+  border-right: 3px solid rgba(150, 100, 200, 0.8);
   border-radius: 50%;
   animation: ${rotate} 2s linear infinite;
 `;
@@ -76,8 +76,8 @@ const InnerRing = styled.div`
   width: 100px;
   height: 100px;
   border: 3px solid transparent;
-  border-bottom: 3px solid #a78bfa;
-  border-left: 3px solid #667eea;
+  border-bottom: 3px solid rgba(218, 182, 255, 0.8);
+  border-left: 3px solid rgba(180, 140, 230, 0.8);
   border-radius: 50%;
   animation: ${rotate} 1.5s linear infinite reverse;
 `;
@@ -89,9 +89,10 @@ const CenterDot = styled.div`
   transform: translate(-50%, -50%);
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, rgba(200, 160, 255, 0.9), rgba(150, 100, 200, 0.9));
   border-radius: 50%;
   animation: ${pulse} 1.5s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(200, 160, 255, 0.5);
 `;
 
 const LoadingText = styled.div`
@@ -113,8 +114,8 @@ const SubText = styled.div`
 const SkipButton = styled.button`
   margin-top: 30px;
   padding: 12px 32px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(190, 144, 255, 0.3);
+  border: 1px solid rgba(200, 160, 255, 0.5);
   border-radius: 50px;
   color: white;
   font-size: 16px;
@@ -124,11 +125,13 @@ const SkipButton = styled.button`
   animation: ${fadeIn} 0.3s ease;
   animation-delay: 0.2s;
   animation-fill-mode: both;
+  box-shadow: 0 4px 20px rgba(150, 100, 200, 0.3);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(190, 150, 250, 0.5);
+    border-color: rgba(200, 160, 255, 0.7);
     transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(150, 100, 200, 0.4);
   }
 `;
 
